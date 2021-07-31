@@ -1,24 +1,67 @@
-import logo from './logo.svg';
+import React, { createContext, useEffect, useState } from "react";
+
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 import './App.css';
+import Header from './Components/Header/Header';
+import NoMatch from "./Components/NoMatch/NoMatch";
+import TeamDetails from "./Components/TeamDetails/TeamDetails";
+
+
+
+export const teamContex =createContext();
 
 function App() {
+
+  const [state, setState] = useState([]);
+
+  
+  useEffect(() => {
+    fetch("https://www.thesportsdb.com/api/v1/json/1/searchteams.php?t=")
+
+      .then((data) => data.json())
+      .then((data) => {
+        setState(data.teams);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+
+    <teamContex.Provider value={[state, setState] } >
+
+
+
+    <Router>
+ <Switch>
+ <Route  path="/teamdetails/:id">
+          <TeamDetails></TeamDetails>
+
+          </Route>
+
+ <Route exact path="/">
+          <Header></Header>
+
+          </Route>
+
+
+          <Route path="*">
+            <NoMatch />
+          </Route>
+
+          </Switch>
+    
+
+
+    </Router>
+
+    </teamContex.Provider>
+ 
+  
+
   );
 }
 
